@@ -1,6 +1,7 @@
 use std::borrow::Cow;
 
 use common_utils::{
+    errors::ReportSwitchExt,
     ext_traits::{AsyncExt, ByteSliceExt, ValueExt},
     fp_utils, generate_id, pii,
 };
@@ -859,7 +860,7 @@ pub async fn make_pm_data<'a, F: Clone, R>(
     let request = &payment_data.payment_method_data;
     let token = payment_data.token.clone();
     let hyperswitch_token = if let Some(token) = token {
-        let redis_conn = state.store.get_redis_conn();
+        let redis_conn = state.store.get_redis_conn().switch()?;
         let key = format!(
             "pm_token_{}_{}_hyperswitch",
             token,

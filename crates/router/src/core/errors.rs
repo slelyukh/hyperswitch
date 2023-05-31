@@ -5,7 +5,7 @@ pub mod utils;
 use std::fmt::Display;
 
 use actix_web::{body::BoxBody, http::StatusCode, ResponseError};
-pub use common_utils::errors::{CustomResult, ParsingError, ValidationError};
+pub use common_utils::errors::{CustomResult, ErrorSwitch, ParsingError, ValidationError};
 use config::ConfigError;
 use error_stack;
 pub use redis_interface::errors::RedisError;
@@ -470,6 +470,41 @@ pub enum WebhooksFlowError {
     OutgoingWebhookEncodingFailed,
     #[error("Missing required field: {field_name}")]
     MissingRequiredField { field_name: &'static str },
+}
+
+impl ErrorSwitch<ApiErrorResponse> for RedisError {
+    fn switch(&self) -> ApiErrorResponse {
+        match self {
+            Self::InvalidConfiguration(_)
+            | Self::SetFailed
+            | Self::SetExFailed
+            | Self::SetExpiryFailed
+            | Self::GetFailed
+            | Self::DeleteFailed
+            | Self::StreamAppendFailed
+            | Self::StreamReadFailed
+            | Self::GetLengthFailed
+            | Self::StreamDeleteFailed
+            | Self::StreamTrimFailed
+            | Self::StreamAcknowledgeFailed
+            | Self::ConsumerGroupCreateFailed
+            | Self::ConsumerGroupDestroyFailed
+            | Self::ConsumerGroupRemoveConsumerFailed
+            | Self::ConsumerGroupSetIdFailed
+            | Self::ConsumerGroupClaimFailed
+            | Self::JsonSerializationFailed
+            | Self::JsonDeserializationFailed
+            | Self::SetHashFailed
+            | Self::SetHashFieldFailed
+            | Self::GetHashFieldFailed
+            | Self::InvalidRedisEntryId
+            | Self::RedisConnectionError
+            | Self::SubscribeError
+            | Self::PublishError
+            | Self::OnMessageError => ApiErrorResponse::InternalServerError,
+            Self::NotFound => todo!(),
+        }
+    }
 }
 
 #[cfg(feature = "detailed_errors")]

@@ -1,3 +1,5 @@
+use crate::core::errors;
+
 #[derive(Clone, Debug, serde::Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum ErrorType {
@@ -29,6 +31,9 @@ pub enum DummyConnectorErrors {
 
     #[error(error_type = ErrorType::InvalidRequestError, code = "DC_06", message = "Payment is not successful")]
     PaymentNotSuccessful,
+
+    #[error(error_type = ErrorType::InvalidRequestError, code = "DC_06", message = "Error while getting redis connection")]
+    RedisConnectionUnsuccessful,
 }
 
 impl core::fmt::Display for DummyConnectorErrors {
@@ -69,6 +74,15 @@ impl common_utils::errors::ErrorSwitch<api_models::errors::types::ApiErrorRespon
             Self::PaymentNotSuccessful => {
                 AER::BadRequest(ApiError::new("DC", 6, self.error_message(), None))
             }
+            Self::RedisConnectionUnsuccessful => {
+                AER::InternalServerError(ApiError::new("DC", 7, self.error_message(), None))
+            }
         }
+    }
+}
+
+impl common_utils::errors::ErrorSwitch<DummyConnectorErrors> for errors::RedisError {
+    fn switch(&self) -> DummyConnectorErrors {
+        DummyConnectorErrors::RedisConnectionUnsuccessful
     }
 }

@@ -9,7 +9,7 @@ pub mod transformers;
 use std::{fmt::Debug, marker::PhantomData, ops::Deref, time::Instant};
 
 use api_models::payments::Metadata;
-use common_utils::pii::Email;
+use common_utils::{errors::ReportSwitchExt, pii::Email};
 use error_stack::{IntoReport, ResultExt};
 use futures::future::join_all;
 use masking::Secret;
@@ -781,7 +781,7 @@ async fn decide_payment_method_tokenize_action(
             }
         }
         Some(token) => {
-            let redis_conn = state.store.get_redis_conn();
+            let redis_conn = state.store.get_redis_conn().switch()?;
             let key = format!(
                 "pm_token_{}_{}_{}",
                 token.to_owned(),

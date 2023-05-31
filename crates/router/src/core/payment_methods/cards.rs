@@ -12,6 +12,7 @@ use api_models::{
 };
 use common_utils::{
     consts,
+    errors::ReportSwitchExt,
     ext_traits::{AsyncExt, BytesExt, StringExt, ValueExt},
     generate_id,
 };
@@ -1613,7 +1614,7 @@ pub async fn list_customer_payment_method(
         };
         customer_pms.push(pma.to_owned());
 
-        let redis_conn = state.store.get_redis_conn();
+        let redis_conn = state.store.get_redis_conn().switch()?;
         let key_for_hyperswitch_token = format!(
             "pm_token_{}_{}_hyperswitch",
             parent_payment_method_token, pma.payment_method
