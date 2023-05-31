@@ -474,36 +474,7 @@ pub enum WebhooksFlowError {
 
 impl ErrorSwitch<ApiErrorResponse> for RedisError {
     fn switch(&self) -> ApiErrorResponse {
-        match self {
-            Self::InvalidConfiguration(_)
-            | Self::SetFailed
-            | Self::SetExFailed
-            | Self::SetExpiryFailed
-            | Self::GetFailed
-            | Self::DeleteFailed
-            | Self::StreamAppendFailed
-            | Self::StreamReadFailed
-            | Self::GetLengthFailed
-            | Self::StreamDeleteFailed
-            | Self::StreamTrimFailed
-            | Self::StreamAcknowledgeFailed
-            | Self::ConsumerGroupCreateFailed
-            | Self::ConsumerGroupDestroyFailed
-            | Self::ConsumerGroupRemoveConsumerFailed
-            | Self::ConsumerGroupSetIdFailed
-            | Self::ConsumerGroupClaimFailed
-            | Self::JsonSerializationFailed
-            | Self::JsonDeserializationFailed
-            | Self::SetHashFailed
-            | Self::SetHashFieldFailed
-            | Self::GetHashFieldFailed
-            | Self::InvalidRedisEntryId
-            | Self::RedisConnectionError
-            | Self::SubscribeError
-            | Self::PublishError
-            | Self::OnMessageError => ApiErrorResponse::InternalServerError,
-            Self::NotFound => todo!(),
-        }
+        ApiErrorResponse::InternalServerError
     }
 }
 
