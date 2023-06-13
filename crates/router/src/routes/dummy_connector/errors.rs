@@ -32,7 +32,7 @@ pub enum DummyConnectorErrors {
     #[error(error_type = ErrorType::InvalidRequestError, code = "DC_06", message = "Payment is not successful")]
     PaymentNotSuccessful,
 
-    #[error(error_type = ErrorType::InvalidRequestError, code = "DC_06", message = "Error while getting redis connection")]
+    #[error(error_type = ErrorType::ServerNotAvailable, code = "DC_07", message = "Error while getting redis connection")]
     RedisConnectionUnsuccessful,
 }
 
